@@ -58,7 +58,7 @@ def html_td(value: object, align: str = "right") -> str:
 
 
 def build_trend_monitor_tables(
-    df_filtered: pd.DataFrame, cols: list[str], top_n: int = 50
+    df_filtered: pd.DataFrame, cols: list[str], top_n: int = 10
 ):
     """
     Grouped Trend Monitor tables by Category.
@@ -377,7 +377,7 @@ def main():
         (df_results["Sharpe"] >= 0.80)
         & (df_results["Sharpe"] <= 2.0)
         & (df_results["MaxDD"] >= -0.25)
-    ]
+    ].copy()
 
     # Normalize ticker for safe merging
     df_univ["Ticker"] = df_univ["Ticker"].astype(str).str.upper().str.strip()
@@ -430,7 +430,7 @@ def main():
     if args.email:
 
         message_body_html, message_body_plain = build_trend_monitor_tables(
-            df_filtered, cols=cols, top_n=50
+            df_filtered, cols=cols, top_n=10
         )
 
         TO_ADDRESSES = os.getenv("TO_ADDRESSES", "").split(",")

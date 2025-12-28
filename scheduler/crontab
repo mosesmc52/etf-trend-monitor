@@ -3,3 +3,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # m h dom mon dow user  command
 0 6 * * 0 root /app/run.sh >> /var/log/cron.log 2>&1
+#*/2 * * * * root /app/run.sh >> /var/log/cron.log 2>&1

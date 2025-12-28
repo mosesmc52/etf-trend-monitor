@@ -20,7 +20,6 @@ RUN poetry install --no-interaction --no-root
 
 # app + cron + supervisor
 COPY run_monitor.py .
-COPY etf-list .
 COPY SES.py .
 COPY scheduler/run.sh /app/run.sh
 COPY scheduler/crontab /etc/cron.d/weekly-job

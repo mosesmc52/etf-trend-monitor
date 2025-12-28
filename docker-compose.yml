@@ -7,5 +7,7 @@ services:
       - ./.env
     volumes:
       - ./.env:/app/.env:ro
+      - ./etf-list.csv:/app/etf-list.csv
+      - ./cache_prices:/app/cache_prices
     restart: unless-stopped
     tty: true

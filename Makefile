@@ -28,5 +28,5 @@ down:
 	docker-compose -f $(COMPOSE_FILE) down
 
 clean:
-	docker-compose -f $(COMPOSE_FILE) rm -sfv ios-app-fetcher
-	# docker image rm latest-ios-app-releases_ios-app-fetcher || true
+	docker-compose -f $(COMPOSE_FILE) rm -sfv etf_trend_monitor
+	docker image rm etf-trend-monitor_etf_trend_monitor || true
