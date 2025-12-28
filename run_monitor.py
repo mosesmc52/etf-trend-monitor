@@ -31,9 +31,18 @@ MIN_AVG_VOL = 1_000_000
 KEEP_PATTERNS = [
     "Index",
     "Bond",
+    "Commodity",
     "Equity Sector",
+    "Factor",
     "Country/Region",
     "Other",
+    "Growth",
+    "REIT",
+    "Thematic/Innovation",
+    "Leveraged/Inverse",
+    "Dividend/Income",
+    "Global/World",
+    "Option Strategy",
 ]
 
 MA_WINS = [50, 100, 150, 200, 250, 300]
