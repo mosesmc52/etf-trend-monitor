@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  etf_trend_monitor:
+    build: .
+    container_name: etf_trend_monitor
+    env_file:
+      - ./.env
+    volumes:
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    tty: true
