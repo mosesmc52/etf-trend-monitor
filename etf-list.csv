@@ -7,7 +7,7 @@ AGG,iShares Barclays Aggregate Bond,2003-09-29 00:00:00,Bond,,9020000.0
 AGQ,ProShares Ultra Silver,2008-12-04 00:00:00,Commodity,Silver,1660000.0
 AIYY,Tidal Trust Ii Yieldmax AI Option Income Strategy ETF,2023-11-28 00:00:00,Option Strategy,,1670000.0
 AMDL,Graniteshares 2X Long Amd Daily ETF,2024-03-18 00:00:00,Leveraged/Inverse,,37170000.0
-AMLP,Alerian Mlp ETF,2010-08-25 00:00:00,Other,,1250000.0
+AMLP,Alerian Mlp ETF,2010-08-25 00:00:00,Commodity,,1250000.0
 AMZU,Direxion Daily Amzn Bull 1.5X Shares,2022-09-07 00:00:00,Leveraged/Inverse,,1570000.0
 ARKB,ARK21Shares Bitcoin ETF,2024-01-11 00:00:00,Crypto,,2200000.0
 ARKG,ARKGenomic Revolution ETF,2014-10-31 00:00:00,Other,,2370000.0
@@ -23,7 +23,7 @@ BITO,ProShares Bitcoin Strategy ETF,2021-10-19 00:00:00,Crypto,,9480000.0
 BITU,ProShares Trust ProShares Ultra Bitcoin ETF,2024-04-02 00:00:00,Crypto,,2210000.0
 BITX,Volatility Shares Trust 2X Bitcoin Strategy ETF,2023-06-27 00:00:00,Leveraged/Inverse,,7800000.0
 BIV,Vanguard It Bond ETF,2007-04-10 00:00:00,Bond,,1510000.0
-BKLN,PowerShares Exchange-Traded Fund,2011-03-03 00:00:00,Bond,,6850000.0
+BKLN,PowerShares Exchange-Traded Fund,2011-03-03 00:00:00,Loan,,6850000.0
 BND,Vanguard Total Bond Market ETF,2007-04-10 00:00:00,Bond,,6550000.0
 BNDX,Vanguard Total International Bond ETF,2013-06-04 00:00:00,Bond,,3440000.0
 BOIL,ProShares Ultra Bloomberg Natural Gas,2011-10-06 00:00:00,Commodity,Natural Gas,4570000.0
@@ -33,18 +33,18 @@ CALF,Pacer Us Small Cap Cash Cows 100 ETF,2017-06-19 00:00:00,Equity Sector,,124
 CGCP,Capital Core Plus Income ETF Capital Core Plus Inc,2022-02-24 00:00:00,Dividend/Income,,1040000.0
 CGDV,Capital Dividend Value ETF Capital Dividend Value,2022-02-24 00:00:00,Factor,,3750000.0
 CGGR,Capital Growth ETF Capital Growth ETF,2022-02-24 00:00:00,Growth,,2850000.0
-CGUS,Capital Core Equity ETF Capital Core Equity ETF,2022-02-24 00:00:00,Other,,1150000.0
+CGUS,Capital Core Equity ETF Capital Core Equity ETF,2022-02-24 00:00:00,Dividend/Income,,1150000.0
 CIBR,First Trust Nasdaq Cea Cybersecurity ETF,2015-07-07 00:00:00,Index,Nasdaq,1140000.0
 CONY,Tidal ETF Trust Ii Yieldmax Coin Option Income Strategy ETF,2023-08-15 00:00:00,Option Strategy,,12540000.0
 COPX,Global X Copper Miners ETF,2010-04-20 00:00:00,Global/World,,1340000.0
-COWZ,Pacer Us Cash Cows 100 ETF,2016-12-19 00:00:00,Other,,2570000.0
+COWZ,Pacer Us Cash Cows 100 ETF,2016-12-19 00:00:00,Dividend/Income,,2570000.0
 DFAC,Dimensional U.S. Core Equity 2 ETF,2021-06-14 00:00:00,Country/Region,,1910000.0
 DFAI,Dimensional International Core Equity Market ETF,2020-11-18 00:00:00,Thematic/Innovation,,1090000.0
 DFIV,Dimensional International Value ETF,2021-09-13 00:00:00,Factor,,1030000.0
 DFSV,Dimensional ETF Trust Dimensional Us Small Cap Value ETF,2022-02-24 00:00:00,Equity Sector,,1710000.0
 DGRO,iShares Core Dividend Growth ETF,2014-06-12 00:00:00,Growth,,1560000.0
 DIA,SPDR Dow Jones Industrial Average,2000-01-03 00:00:00,Index,Dow,3740000.0
-DOG,ProShares Short Dow30,2006-06-21 00:00:00,Other,,1070000.0
+DOG,ProShares Short Dow30,2006-06-21 00:00:00,Short,,1070000.0
 DRIP,Direxion Daily S&P Oil & Gas Exp. & Prod. Bear 2X Shares,2015-05-29 00:00:00,Leveraged/Inverse,,2009999.0
 DUHP,Dimensional ETF Trust Dimensional Us High Profitability ETF,2022-02-24 00:00:00,Other,,1200000.0
 DUST,Direxion Daily Gold Miners Index Bear 2X,2010-12-08 00:00:00,Leveraged/Inverse,,1940000.0
@@ -55,7 +55,7 @@ EFV,iShares MSCI Value Index Fund,2005-08-05 00:00:00,Index,,2510000.0
 EMB,iShares JP Morgan Em Bond Fd,2007-12-19 00:00:00,Bond,,6430000.0
 EMLC,Market Vectors Emerging Markets,2010-07-23 00:00:00,Index,Global/International,2760000.0
 EMXC,iShares MSCI Emerging Markets Ex China ETF,2017-07-26 00:00:00,Index,Global/International,1470000.0
-ETHD,ProShares Trust ProShares Ultrashort Ether ETF,2024-06-07 00:00:00,Other,,10080000.0
+ETHD,ProShares Trust ProShares Ultrashort Ether ETF,2024-06-07 00:00:00,Crypto,,10080000.0
 ETHE,Grayscale Ethereum Trust,2019-06-20 00:00:00,Crypto,,6020000.0
 ETHU,Volatility Shares Trust 2X Ether ETF,2024-06-04 00:00:00,Leveraged/Inverse,,5340000.0
 EWA,iShares MSCI Australia Index,2000-01-03 00:00:00,Index,,2350000.0
@@ -99,7 +99,7 @@ IBIT,iShares Bitcoin Trust,2024-01-11 00:00:00,Crypto,,44670000.0
 ICLN,iShares Global Clean Energy ETF,2008-06-25 00:00:00,Equity Sector,Energy,3170000.0
 ICSH,iShares Ultra Short-Term Bond ETF,2013-12-13 00:00:00,Bond,Short Duration,1230000.0
 IDEV,iShares Core MSCI International Developed Markets ETF,2017-03-23 00:00:00,Index,Global/International,1110000.0
-IEF,iShares Lehman 7-10 Year Treasu,2002-07-30 00:00:00,Other,,7300000.0
+IEF,iShares Lehman 7-10 Year Treasu,2002-07-30 00:00:00,Bond,,7300000.0
 IEFA,iShares Core MSCI Eafe,2012-10-22 00:00:00,Index,Global/International,10170000.0
 IEI,iShares Lehman 3-7 Year Treasur,2007-01-11 00:00:00,Bond,,1710000.0
 IEMG,iShares Core MSCI Emerging Markets,2012-10-22 00:00:00,Index,Global/International,8960000.0
@@ -123,7 +123,7 @@ IWN,iShares Russell 2000 Value,2000-07-28 00:00:00,Index,Russell,1010000.0
 IWR,iShares Russell Midcap Index Fund,2002-02-04 00:00:00,Index,Russell,1680000.0
 IXUS,iShares Core MSCI Total International Stock ETF,2012-10-22 00:00:00,Index,,1740000.0
 IYR,iShares Dow Jones Us Real Estate,2005-01-03 00:00:00,REIT,,6650000.0
-JAAA,Janus Henderson Aaa Clo ETF,2020-10-19 00:00:00,Other,,5310000.0
+JAAA,Janus Henderson Aaa Clo ETF,2020-10-19 00:00:00,Loan,,5310000.0
 JDST,Direxion Daily Junior Gold Miners Index Bear 2X,2013-10-03 00:00:00,Leveraged/Inverse,,7230000.0
 JEPI,JP Morgan Equity Premium Income ETF,2020-05-21 00:00:00,Dividend/Income,,4310000.0
 JEPQ,JP Morgan Nasdaq Equity Premium Income ETF,2022-05-04 00:00:00,Index,Nasdaq,5890000.0
@@ -141,9 +141,9 @@ LQD,iShares Iboxx $ Invest Grade Bond,2002-07-30 00:00:00,Bond,,26350000.0
 MAGS,Roundhill Magnificent Seven ETF,2023-04-11 00:00:00,Other,,2000000.0
 MBB,iShares Barclays Mbs Bond Fund,2007-03-16 00:00:00,Bond,Mortgage/Agency,2760000.0
 MCHI,iShares MSCI China,2011-03-31 00:00:00,Index,,2250000.0
-MINT,Pimco Enh Shrt Maturity,2009-11-17 00:00:00,Other,,1150000.0
+MINT,Pimco Enh Shrt Maturity,2009-11-17 00:00:00,Short,,1150000.0
 MRNY,Tidal Trust Ii Yieldmax Mrna Option Income Strategy ETF,2023-10-24 00:00:00,Option Strategy,,2780000.0
-MSOS,AdvisorShares Pure Us Cannabis ETF,2020-09-02 00:00:00,Other,,9400000.0
+MSOS,AdvisorShares Pure Us Cannabis ETF,2020-09-02 00:00:00,Equity Sector,,9400000.0
 MSTY,Tidal Trust Ii Yieldmax Mstr Option Income Strategy ETF,2024-02-22 00:00:00,Option Strategy,,11050000.0
 MUB,iShares S&P National Municipal,2007-09-10 00:00:00,Bond,,5260000.0
 NAIL,Direxion Daily Homebuilders & Supplies Bull 3X Shares,2015-08-19 00:00:00,Leveraged/Inverse,,1110000.0
@@ -157,12 +157,12 @@ NVDY,Tidal ETF Trust Ii Yieldmax Nvda Option Income Strategy ETF,2023-05-11 00:0
 PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF,2014-11-07 00:00:00,Commodity,Broad Commodity,5070000.0
 PFF,iShares S&P Us Preferred Stock,2007-03-30 00:00:00,Index,,3170000.0
 PGX,PowerShares Preferred Portfolio,2008-01-31 00:00:00,Index,,5420000.0
-PSQ,ProShares Short Qqq,2006-06-21 00:00:00,Other,,4520000.0
+PSQ,ProShares Short Qqq,2006-06-21 00:00:00,Short,,4520000.0
 PULS,Pgim Ultra Short Bond ETF,2018-04-10 00:00:00,Bond,Short Duration,2049999.0
 PYLD,Pimco Multisector Bond Active ETF,2023-06-22 00:00:00,Bond,,2069999.0
 PZA,Invesco National Amt-Free Municipal Bond ETF,2007-10-11 00:00:00,Bond,,1510000.0
-QID,ProShares Ultrashort Qqq,2006-07-13 00:00:00,Other,,6970000.0
-QLD,ProShares Ultra Qqq,2006-06-21 00:00:00,Other,,2850000.0
+QID,ProShares Ultrashort Qqq,2006-07-13 00:00:00,Short,,6970000.0
+QLD,ProShares Ultra Qqq,2006-06-21 00:00:00,Leveraged/Inverse,,2850000.0
 QQQ,PowerShares Qqq,2000-01-03 00:00:00,Index,,45000000.0
 QQQI,Neos Nasdaq 100 High Income ETF,2024-01-30 00:00:00,Index,Nasdaq,2530000.0
 QQQM,Invesco Nasdaq 100 ETF,2020-10-13 00:00:00,Index,Nasdaq,3060000.0
@@ -170,7 +170,7 @@ QUAL,iShares Edge MSCI Usa Quality Factor ETF,2013-07-18 00:00:00,Index,,1130000
 QYLD,Global X Nasdaq 100 Covered Call ETF,2013-12-12 00:00:00,Option Strategy,,4370000.0
 RDVY,First Trust Nasdaq Rising Dividend Achievers ETF,2014-01-07 00:00:00,Index,Nasdaq,1100000.0
 REET,iShares Global Reit ETF,2014-07-10 00:00:00,REIT,,1540000.0
-RSP,Rydex S&P Equal Weight ETF,2003-05-01 00:00:00,Other,,11470000.0
+RSP,Rydex S&P Equal Weight ETF,2003-05-01 00:00:00,Index,,11470000.0
 RWM,ProShares Short Russell2000,2007-01-25 00:00:00,Index,,9750000.0
 SBIT,ProShares Trust ProShares Ultrashort Bitcoin ETF,2024-04-02 00:00:00,Crypto,,1450000.0
 SCHA,Schwab U.S. Small-Cap ETF,2009-11-03 00:00:00,Equity Sector,,3750000.0
@@ -189,12 +189,12 @@ SCHV,Schwab U.S. Large-Cap Value ETF,2009-12-11 00:00:00,Equity Sector,,2020000.
 SCHZ,Schwab U.S. Aggregate Bond ETF,2011-07-14 00:00:00,Bond,,1390000.0
 SCO,ProShares Ultrashort Dj-Aig Cru,2008-11-25 00:00:00,Thematic/Innovation,,3130000.0
 SCZ,iShares MSCI Eafe Small-Cap ETF,2007-12-12 00:00:00,Index,Global/International,1020000.0
-SDOW,Ultrapro Short Dow30,2010-02-11 00:00:00,Other,,2150000.0
-SDS,ProShares Ultrashort S&P500,2007-05-07 00:00:00,Other,,14280000.0
+SDOW,Ultrapro Short Dow30,2010-02-11 00:00:00,Short,,2150000.0
+SDS,ProShares Ultrashort S&P500,2007-05-07 00:00:00,Short,,14280000.0
 SDVY,First Trust Smid Cap Rising Dividend Achievers ETF,2017-11-03 00:00:00,Equity Sector,,1240000.0
 SGOL,Aberdeen Standard Physical Gold Shares ETF,2009-09-09 00:00:00,Commodity,Gold/Precious,4170000.0
 SGOV,iShares 0-3 Month Treasury Bond ETF,2020-05-28 00:00:00,Bond,Treasury,11450000.0
-SH,ProShares Short S&P500,2006-06-21 00:00:00,Other,,4520000.0
+SH,ProShares Short S&P500,2006-06-21 00:00:00,Short,,4520000.0
 SHLD,Global X Defense Tech ETF,2023-09-14 00:00:00,Equity Sector,Aerospace & Defense,1060000.0
 SHV,iShares Lehman Short Treasury B,2007-01-11 00:00:00,Bond,Treasury,2860000.0
 SHY,iShares 1-3 Year Treasury Bond,2002-07-30 00:00:00,Bond,Treasury,3440000.0
@@ -226,16 +226,16 @@ SPTL,SPDR Portfolio Long Term Treasury ETF,2007-05-30 00:00:00,Bond,Treasury,570
 SPTS,SPDR Portfolio Short Term Treasury ETF,2011-12-01 00:00:00,Bond,Treasury,1110000.0
 SPXL,Direxion Daily S&P 500 Bull 3X,2008-11-05 00:00:00,Leveraged/Inverse,,3110000.0
 SPXS,Direxion Daily S&P 500 Bear 3X,2008-11-05 00:00:00,Leveraged/Inverse,,52380000.0
-SPXU,ProShares Ultrapro Short S&P500,2009-06-25 00:00:00,Other,,21420000.0
+SPXU,ProShares Ultrapro Short S&P500,2009-06-25 00:00:00,Short,,21420000.0
 SPY,SPDR S&P 500,2000-01-03 00:00:00,Index,,70160000.0
 SPYD,SPDR Portfolio S&P 500 High Dividend ETF,2015-10-22 00:00:00,Index,,1190000.0
 SPYG,SPDR Portfolio S&P 500 Growth ETF,2007-05-16 00:00:00,Index,,2310000.0
 SPYI,Neos S&P 500 High Income ETF,2022-08-30 00:00:00,Index,,1720000.0
 SPYV,SPDR Portfolio S&P 500 Value ETF,2007-05-16 00:00:00,Index,,2360000.0
-SQQQ,ProShares Ultrapro Short Qqq,2010-02-11 00:00:00,Other,,94680000.0
-SRLN,SPDR Blackstone/Gso Senior Loan,2013-04-04 00:00:00,Other,,2750000.0
+SQQQ,ProShares Ultrapro Short Qqq,2010-02-11 00:00:00,Short,,94680000.0
+SRLN,SPDR Blackstone/Gso Senior Loan,2013-04-04 00:00:00,Loan,,2750000.0
 SRTY,Proshareultrapro Short Russell 2000,2010-02-11 00:00:00,Index,Russell,3710000.0
-SSO,ProShares Ultra S&P500,2006-06-21 00:00:00,Other,,2089999.0
+SSO,ProShares Ultra S&P500,2006-06-21 00:00:00,Leveraged/Inverse,,2089999.0
 SVIX,-1X Short VIX Futures ETF,2022-03-30 00:00:00,Factor,,3400000.0
 SVXY,ProShares Short VIX Short Term,2011-10-04 00:00:00,Factor,,1320000.0
 TBIL,Us Treasury 3 Month Bill ETF,2022-08-09 00:00:00,Bond,Treasury,1870000.0
@@ -247,7 +247,7 @@ TLH,iShares 10-20 Year Treasury Bond ETF,2007-01-11 00:00:00,Bond,Treasury,15500
 TLT,iShares Barclays 20+ Year Treas Bond,2002-07-30 00:00:00,Bond,,36410000.0
 TMF,Direxion Daily 20+ Year Treasury Bull 3X Shares,2009-04-16 00:00:00,Leveraged/Inverse,,8170000.0
 TNA,Direxion Daily Small Cap Bull 3X Shares,2008-11-05 00:00:00,Leveraged/Inverse,,14290000.0
-TQQQ,ProShares Ultrapro Qqq,2010-02-11 00:00:00,Other,,62010000.0
+TQQQ,ProShares Ultrapro Qqq,2010-02-11 00:00:00,Leveraged/Inverse,,62010000.0
 TSDD,Graniteshares 1.5X Short Tsla Daily ETF,2023-08-22 00:00:00,Leveraged/Inverse,,3450000.0
 TSLL,Direxion Daily Tsla Bull 1.5X Shares,2022-08-09 00:00:00,Leveraged/Inverse,,167380000.0
 TSLQ,Axs Tsla Bear Daily ETF,2022-07-14 00:00:00,Leveraged/Inverse,,31140000.0
@@ -258,11 +258,11 @@ TSLY,Tidal ETF Trust Ii Yieldmax Tsla Option Income Strategy ETF,2022-11-23 00:0
 TSLZ,T-Rex 2X Inverse Tesla Daily Target ETF,2023-10-19 00:00:00,Leveraged/Inverse,,91410000.0
 TZA,Direxion Daily Small Cap Bear 3X Shares,2008-11-05 00:00:00,Leveraged/Inverse,,23950000.0
 UCO,ProShares Ultra Dj-Aig Crude Oil,2008-11-25 00:00:00,Commodity,Oil,3310000.0
-UDOW,ProShares Ultrapro Dow30,2010-02-11 00:00:00,Other,,2080000.0
+UDOW,ProShares Ultrapro Dow30,2010-02-11 00:00:00,Index,,2080000.0
 UGL,ProShares Ultra Gold,2008-12-03 00:00:00,Commodity,Gold/Precious,1210000.0
 ULTY,Tidal Trust Ii Yieldmax Ultra Option Income Strategy ETF,2024-02-29 00:00:00,Option Strategy,,28700000.0
 UNG,United States Natural Gas Fund,2007-04-18 00:00:00,Commodity,Natural Gas,8109999.0
-UPRO,ProShares Ultrapro S&P500,2009-06-25 00:00:00,Other,,4840000.0
+UPRO,ProShares Ultrapro S&P500,2009-06-25 00:00:00,Index,,4840000.0
 URA,Global X Uranium ETF,2010-11-05 00:00:00,Commodity,Uranium,3600000.0
 URTY,ProShares Ultrapro Russell2000,2010-02-11 00:00:00,Index,,1170000.0
 USFR,WisdomTree Floating Rate Treasury Fund,2014-02-04 00:00:00,Bond,Treasury,4110000.0
@@ -277,8 +277,8 @@ VCIT,Vanguard It Bond ETF,2009-11-23 00:00:00,Bond,,10210000.0
 VCLT,Vanguard Long-Term Corporate Bonds,2009-11-23 00:00:00,Bond,Investment Grade,3540000.0
 VCSH,Vanguard St Bond ETF,2009-11-23 00:00:00,Bond,,4970000.0
 VEA,Vanguard Europe Pacific ETF,2007-07-26 00:00:00,Currency,,12000000.0
-VEU,Vanguard FTSE Aw Ex-Us ETF,2007-03-08 00:00:00,Other,,2770000.0
-VFLO,Victoryshares Free Cash Flow ETF,2023-06-22 00:00:00,Other,,1050000.0
+VEU,Vanguard FTSE Aw Ex-Us ETF,2007-03-08 00:00:00,Index,,2770000.0
+VFLO,Victoryshares Free Cash Flow ETF,2023-06-22 00:00:00,Dividend/Income,,1050000.0
 VGIT,Vanguard Intermediate-Term Treasury ETF,2009-11-23 00:00:00,Bond,Treasury,2049999.0
 VGK,Vanguard European ETF,2005-03-10 00:00:00,Currency,,3300000.0
 VGLT,Vanguard Long-Term Treasury ETF,2009-11-24 00:00:00,Bond,Treasury,1940000.0
@@ -297,20 +297,20 @@ VUSB,Vanguard Ultra-Short Bond ETF,2021-04-07 00:00:00,Bond,Short Duration,10400
 VWO,Vanguard MSCI Emerging Markets ETF,2005-03-10 00:00:00,Index,Global/International,8150000.0
 VXUS,Vanguard Total International Stock Index,2011-01-28 00:00:00,Index,,4300000.0
 VXX,iPath S&P 500 VIX Short-Term Futures,2009-03-02 00:00:00,Index,,5370000.0
-XBI,SPDR Series Trust SPDR S&P Bio,2006-02-06 00:00:00,Other,,9800000.0
-XHB,SPDR Series Trust SPDR Homebuil,2006-02-06 00:00:00,Other,,2690000.0
+XBI,SPDR Series Trust SPDR S&P Bio,2006-02-06 00:00:00,Equity Sector,,9800000.0
+XHB,SPDR Series Trust SPDR Homebuil,2006-02-06 00:00:00,Equity Sector,,2690000.0
 XLB,Materials Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Materials,6440000.0
 XLC,Communication Services Select Sector SPDR Fund,2018-06-19 00:00:00,Bond,,5800000.0
 XLE,Energy Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Energy,18220000.0
 XLF,Financial Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Financials,36490000.0
 XLG,Invesco S&P 500® Top 50 ETF,2005-05-10 00:00:00,Index,,1430000.0
-XLI,Industrial Select Sector SPDR,2000-01-03 00:00:00,Other,,11160000.0
+XLI,Industrial Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,,11160000.0
 XLK,Technology Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Information Technology,6220000.0
 XLP,Consumer Staples Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Consumer Staples,15260000.0
 XLRE,Real Estate Select Sector SPDR Fund,2015-10-08 00:00:00,REIT,,6390000.0
 XLU,Utilities Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Utilities,11950000.0
 XLV,Health Care Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,Health Care,13580000.0
-XLY,Consumer Discret Select Sector SPDR,2000-01-03 00:00:00,Other,,5100000.0
+XLY,Consumer Discret Select Sector SPDR,2000-01-03 00:00:00,Equity Sector,,5100000.0
 XME,SPDR S&P Metals & Mining,2006-06-22 00:00:00,Equity Sector,Metals & Mining,1790000.0
 XOP,SPDR S&P Oil&Gas Exploration & Prod,2006-06-22 00:00:00,Commodity,Oil,3340000.0
 XRT,SPDR S&P Retail,2006-06-22 00:00:00,Thematic/Innovation,,5220000.0

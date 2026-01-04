@@ -43,6 +43,8 @@ KEEP_PATTERNS = [
     "Dividend/Income",
     "Global/World",
     "Option Strategy",
+    "Short",
+    "Loan",
 ]
 
 MA_WINS = [50, 100, 150, 200, 250, 300]
