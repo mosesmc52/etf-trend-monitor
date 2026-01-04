@@ -451,8 +451,8 @@ def main():
             from_address=os.environ.get("FROM_ADDRESS"),
         )
 
-        today_str = datetime.now(timezone.utc).strftime("%B %Y")
-        subject = f"ETF Trend Monitor – {today_str}"
+        today_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
+        subject = f"ETF Trend Monitor – Week of {today_str}"
 
         for to_address in TO_ADDRESSES:
             ses.send_html_email(

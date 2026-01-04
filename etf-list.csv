@@ -23,7 +23,7 @@ BITO,ProShares Bitcoin Strategy ETF,2021-10-19 00:00:00,Crypto,,9480000.0
 BITU,ProShares Trust ProShares Ultra Bitcoin ETF,2024-04-02 00:00:00,Crypto,,2210000.0
 BITX,Volatility Shares Trust 2X Bitcoin Strategy ETF,2023-06-27 00:00:00,Leveraged/Inverse,,7800000.0
 BIV,Vanguard It Bond ETF,2007-04-10 00:00:00,Bond,,1510000.0
-BKLN,PowerShares Exchange-Traded Fund,2011-03-03 00:00:00,Other,,6850000.0
+BKLN,PowerShares Exchange-Traded Fund,2011-03-03 00:00:00,Bond,,6850000.0
 BND,Vanguard Total Bond Market ETF,2007-04-10 00:00:00,Bond,,6550000.0
 BNDX,Vanguard Total International Bond ETF,2013-06-04 00:00:00,Bond,,3440000.0
 BOIL,ProShares Ultra Bloomberg Natural Gas,2011-10-06 00:00:00,Commodity,Natural Gas,4570000.0
@@ -103,7 +103,7 @@ IEF,iShares Lehman 7-10 Year Treasu,2002-07-30 00:00:00,Other,,7300000.0
 IEFA,iShares Core MSCI Eafe,2012-10-22 00:00:00,Index,Global/International,10170000.0
 IEI,iShares Lehman 3-7 Year Treasur,2007-01-11 00:00:00,Bond,,1710000.0
 IEMG,iShares Core MSCI Emerging Markets,2012-10-22 00:00:00,Index,Global/International,8960000.0
-IGIB,iShares Lehman Intermediate,2007-05-16 00:00:00,Other,,1700000.0
+IGIB,iShares Lehman Intermediate,2007-05-16 00:00:00,Bond,,1700000.0
 IGSB,iShares Short-Term Corporate Bond ETF,2007-05-16 00:00:00,Bond,Investment Grade,2730000.0
 IGV,iShares Expanded Tech-Software Sector Et,2002-09-03 00:00:00,Equity Sector,Software,4550000.0
 IJH,iShares S&P Midcap 400 Index Fu,2004-01-02 00:00:00,Index,,6930000.0
@@ -112,7 +112,7 @@ ILF,iShares Latin America 40 Index,2002-02-05 00:00:00,Commodity,Broad Commodity
 INDA,iShares MSCI India,2012-02-03 00:00:00,Index,,6280000.0
 IQLT,iShares MSCI Intl Quality Factor ETF,2015-01-15 00:00:00,Index,,1550000.0
 ITB,iShares Dow Jones U.S. Home,2006-05-05 00:00:00,Index,Dow,3150000.0
-ITOT,iShares Core S&P Total U.S. Stock Market ETF,2007-05-16 00:00:00,Country/Region,,1660000.0
+ITOT,iShares Core S&P Total U.S. Stock Market ETF,2007-05-16 00:00:00,Index,,1660000.0
 IUSB,iShares Core Total Usd Bond Market ETF,2014-06-12 00:00:00,Currency,,2270000.0
 IVV,iShares S&P 500 Index,2005-01-03 00:00:00,Index,,5230000.0
 IVW,iShares S&P 500 Growth Index Fund,2005-01-03 00:00:00,Index,,1990000.0
@@ -163,7 +163,7 @@ PYLD,Pimco Multisector Bond Active ETF,2023-06-22 00:00:00,Bond,,2069999.0
 PZA,Invesco National Amt-Free Municipal Bond ETF,2007-10-11 00:00:00,Bond,,1510000.0
 QID,ProShares Ultrashort Qqq,2006-07-13 00:00:00,Other,,6970000.0
 QLD,ProShares Ultra Qqq,2006-06-21 00:00:00,Other,,2850000.0
-QQQ,PowerShares Qqq,2000-01-03 00:00:00,Other,,45000000.0
+QQQ,PowerShares Qqq,2000-01-03 00:00:00,Index,,45000000.0
 QQQI,Neos Nasdaq 100 High Income ETF,2024-01-30 00:00:00,Index,Nasdaq,2530000.0
 QQQM,Invesco Nasdaq 100 ETF,2020-10-13 00:00:00,Index,Nasdaq,3060000.0
 QUAL,iShares Edge MSCI Usa Quality Factor ETF,2013-07-18 00:00:00,Index,,1130000.0
@@ -177,7 +177,7 @@ SCHA,Schwab U.S. Small-Cap ETF,2009-11-03 00:00:00,Equity Sector,,3750000.0
 SCHB,Schw Us Brd Mkt ETF,2009-11-03 00:00:00,Other,,4940000.0
 SCHE,Schwab Emerging Markets Equity ETF,2010-01-14 00:00:00,Index,Global/International,1150000.0
 SCHF,Schwab International Equity,2009-11-03 00:00:00,Currency,,9340000.0
-SCHG,Schwab U.S. Large-Cap Growth ETF,2009-12-11 00:00:00,Equity Sector,,8830000.0
+SCHG,Schwab U.S. Large-Cap Growth ETF,2009-12-11 00:00:00,Index,,8830000.0
 SCHH,Schwab Us Reit ETF,2011-01-13 00:00:00,REIT,,7380000.0
 SCHI,Schwab 5-10 Year Corporate Bond ETF,2019-10-10 00:00:00,Bond,Investment Grade,1050000.0
 SCHK,Schwab 1000 Index ETF,2017-10-11 00:00:00,Index,,1090000.0
@@ -289,7 +289,7 @@ VNQ,Vanguard Reit ETF,2004-09-29 00:00:00,REIT,,3390000.0
 VOO,Vanguard S&P 500 ETF,2010-09-09 00:00:00,Index,,6300000.0
 VT,Vanguard Total World Stock ETF,2008-06-26 00:00:00,Country/Region,,2550000.0
 VTEB,Vanguard Tax-Exempt Bond Index ETF,2015-08-25 00:00:00,Bond,,7320000.0
-VTI,Vanguard Total Stock Market ETF,2001-06-15 00:00:00,Other,,3430000.0
+VTI,Vanguard Total Stock Market ETF,2001-06-15 00:00:00,Index,,3430000.0
 VTIP,Vanguard Short-Term Inflation-Protected Securities ETF,2012-10-16 00:00:00,Bond,Inflation-Protected,1370000.0
 VTV,Vanguard Value ETF,2004-01-30 00:00:00,Factor,,2600000.0
 VTWO,Vanguard Russell 2000 ETF,2010-09-22 00:00:00,Index,Russell,2009999.0
