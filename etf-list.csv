@@ -155,8 +155,8 @@ NVDS,Axs 1.25X Nvda Bear Daily ETF,2022-07-14 00:00:00,Leveraged/Inverse,,175000
 NVDX,ETF Opportunities Trust T-Rex 2X Long Nvidia Daily Target ETF,2023-10-19 00:00:00,Leveraged/Inverse,,14150000.0
 NVDY,Tidal ETF Trust Ii Yieldmax Nvda Option Income Strategy ETF,2023-05-11 00:00:00,Option Strategy,,3800000.0
 PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF,2014-11-07 00:00:00,Commodity,Broad Commodity,5070000.0
-PFF,iShares S&P Us Preferred Stock,2007-03-30 00:00:00,Other,,3170000.0
-PGX,PowerShares Preferred Portfolio,2008-01-31 00:00:00,Other,,5420000.0
+PFF,iShares S&P Us Preferred Stock,2007-03-30 00:00:00,Index,,3170000.0
+PGX,PowerShares Preferred Portfolio,2008-01-31 00:00:00,Index,,5420000.0
 PSQ,ProShares Short Qqq,2006-06-21 00:00:00,Other,,4520000.0
 PULS,Pgim Ultra Short Bond ETF,2018-04-10 00:00:00,Bond,Short Duration,2049999.0
 PYLD,Pimco Multisector Bond Active ETF,2023-06-22 00:00:00,Bond,,2069999.0
