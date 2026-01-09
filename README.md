@@ -9,3 +9,9 @@ Features:
 - Moving-average trend evaluation across multiple windows
 - Risk-aware filtering (Sharpe, drawdown, time-in-market)
 - Designed for research, monitoring, and portfolio signal generation
+
+
+- Tasks
+    - Keep Track of last run
+    - Add AI commentary ?
+    - Think about how to categorize shorts
