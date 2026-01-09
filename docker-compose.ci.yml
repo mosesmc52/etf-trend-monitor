@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  etf_trend_monitor:
+    build: .
+    container_name: etf_trend_monitor
+    image: ghcr.io/mosesmc52/etf-trend-monitor:${TAG:-latest}
+    env_file:
+      - ./.env
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./etf-list.csv:/app/etf-list.csv
+      - ./cache_prices:/app/cache_prices
+    restart: unless-stopped
+    tty: true
