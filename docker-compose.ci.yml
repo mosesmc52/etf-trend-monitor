@@ -4,8 +4,6 @@ services:
     build: .
     container_name: etf_trend_monitor
     image: ghcr.io/mosesmc52/etf-trend-monitor:${TAG:-latest}
-    env_file:
-      - ./.env
     volumes:
       - ./.env:/app/.env:ro
       - ./etf-list.csv:/app/etf-list.csv
