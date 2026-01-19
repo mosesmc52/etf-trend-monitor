@@ -45,7 +45,6 @@ KEEP_PATTERNS = [
     "Option Strategy",
     "Short",
     "Loan",
-    "Crypto",
 ]
 
 MA_WINS = [50, 100, 150, 200, 250, 300]
@@ -385,12 +384,11 @@ def main():
     df_results = pd.concat(dfs, ignore_index=True)
     df_results = df_results.merge(df_univ, on="Ticker", how="left")
 
-    df_filtered = df_results.copy()
-    # df_filtered = df_results[
-    #     (df_results["Sharpe"] >= 0.85)
-    #     & (df_results["Sharpe"] <= 2.0)
-    #     & (df_results["MaxDD"] >= -0.25)
-    # ].copy()
+    df_filtered = df_results[
+        (df_results["Sharpe"] >= 0.85)
+        & (df_results["Sharpe"] <= 2.0)
+        & (df_results["MaxDD"] >= -0.25)
+    ].copy()
 
     # Normalize ticker for safe merging
     df_univ["Ticker"] = df_univ["Ticker"].astype(str).str.upper().str.strip()
