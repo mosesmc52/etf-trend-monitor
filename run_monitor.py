@@ -385,7 +385,7 @@ def main():
     df_results = df_results.merge(df_univ, on="Ticker", how="left")
 
     df_filtered = df_results[
-        (df_results["Sharpe"] >= 0.85)
+        (df_results["Sharpe"] >= 0.6)
         & (df_results["Sharpe"] <= 2.0)
         & (df_results["MaxDD"] >= -0.25)
     ].copy()
