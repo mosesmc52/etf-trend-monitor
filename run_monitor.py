@@ -385,9 +385,9 @@ def main():
     df_results = df_results.merge(df_univ, on="Ticker", how="left")
 
     df_filtered = df_results[
-        (df_results["Sharpe"] >= 0.6)
-        & (df_results["Sharpe"] <= 2.0)
-        & (df_results["MaxDD"] >= -0.25)
+        (df_results["Sharpe"] >= float(os.getenv("MIN_SHARPE", 0.6)))
+        & (df_results["Sharpe"] <= float(os.getenv("MAX_SHARPE", 2.0)))
+        & (df_results["MaxDD"] >= float(os.getenv("MAX_DD", -0.25)))
     ].copy()
 
     # Normalize ticker for safe merging
