@@ -59,7 +59,9 @@ jobs:
           AWS_SES_ACCESS_KEY_ID: ${{ secrets.AWS_SES_ACCESS_KEY_ID }}
           AWS_SES_SECRET_ACCESS_KEY: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
           AWS_SES_REGION_NAME: ${{ vars.AWS_SES_REGION_NAME }}
-
+          MIN_SHARPE: ${{ vars.MIN_SHARPE }}
+          MAX_SHARPE: ${{ vars.MAX_SHARPE }}
+          MAX_DD: ${{ vars.MAX_DD }}
         run: |
           set -euo pipefail
 
@@ -94,7 +96,9 @@ jobs:
                 AWS_SES_REGION_NAME=${AWS_SES_REGION_NAME}
                 AWS_SES_ACCESS_KEY_ID=${AWS_SES_ACCESS_KEY_ID}
                 AWS_SES_SECRET_ACCESS_KEY=${AWS_SES_SECRET_ACCESS_KEY}
-
+                MIN_SHARPE=${MIN_SHARPE}
+                MAX_SHARPE=${MAX_SHARPE}
+                MAX_DD=${MAX_DD}
             - path: /opt/job/run.sh
               permissions: "0700"
               content: |
