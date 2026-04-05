@@ -51,11 +51,6 @@ write_files:
       MIN_SHARPE={env.get("MIN_SHARPE", "")}
       MAX_SHARPE={env.get("MAX_SHARPE", "")}
       MAX_DD={env.get("MAX_DD", "")}
-      SPACES_KEY={env.get("SPACES_KEY", "")}
-      SPACES_SECRET={env.get("SPACES_SECRET", "")}
-      SPACES_BUCKET={env.get("SPACES_BUCKET", "")}
-      SPACES_REGION={env.get("SPACES_REGION", "")}
-      SPACES_ENDPOINT={env.get("SPACES_ENDPOINT", "")}
 
   - path: /opt/job/run.sh
     permissions: "0700"
@@ -96,24 +91,6 @@ write_files:
 
       echo "$EXIT_CODE" > /opt/job/exit_code
       echo "=== Job end: $(date -Is), exit=$EXIT_CODE ==="
-
-      # Optional: upload log to Spaces if configured
-      if [ -n "${{SPACES_KEY:-}}" ] && [ -n "${{SPACES_SECRET:-}}" ] && [ -n "${{SPACES_BUCKET:-}}" ] && [ -n "${{SPACES_REGION:-}}" ] && [ -n "${{SPACES_ENDPOINT:-}}" ]; then
-        if ! command -v aws >/dev/null 2>&1; then
-          apt-get update -y >/dev/null 2>&1 || true
-          apt-get install -y awscli >/dev/null 2>&1 || true
-        fi
-
-        if command -v aws >/dev/null 2>&1; then
-          export AWS_ACCESS_KEY_ID="${{SPACES_KEY}}"
-          export AWS_SECRET_ACCESS_KEY="${{SPACES_SECRET}}"
-          export AWS_DEFAULT_REGION="${{SPACES_REGION}}"
-          HOSTNAME_VAL="$(hostname)"
-          LOG_KEY="logs/etf-trend-monitor/$(date -u +%Y/%m/%d)/$(date -u +%Y%m%dT%H%M%SZ)-${{HOSTNAME_VAL}}.log"
-          aws --endpoint-url "${{SPACES_ENDPOINT}}" s3 cp "$LOG" "s3://${{SPACES_BUCKET}}/${{LOG_KEY}}" || true
-          echo "Uploaded log to $LOG_KEY"
-        fi
-      fi
 
       # Self-delete droplet
       META=http://169.254.169.254/metadata/v1
@@ -161,11 +138,6 @@ def main(event, context):
                 "MIN_SHARPE": optional_env("MIN_SHARPE"),
                 "MAX_SHARPE": optional_env("MAX_SHARPE"),
                 "MAX_DD": optional_env("MAX_DD"),
-                "SPACES_KEY": optional_env("SPACES_KEY"),
-                "SPACES_SECRET": optional_env("SPACES_SECRET"),
-                "SPACES_BUCKET": optional_env("SPACES_BUCKET"),
-                "SPACES_REGION": optional_env("SPACES_REGION"),
-                "SPACES_ENDPOINT": optional_env("SPACES_ENDPOINT"),
                 "JOB_IMAGE": require_env("JOB_IMAGE"),
             }
         ),
