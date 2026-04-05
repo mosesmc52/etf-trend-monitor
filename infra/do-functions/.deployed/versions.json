@@ -1,0 +1,18 @@
+[
+  {
+    "apihost": "https://faas-nyc1-2ef2e6cc.doserverless.co",
+    "namespace": "fn-12eab81c-a340-4058-ac61-508b8937477d",
+    "packageVersions": {
+      "launcher": {
+        "version": "0.0.24",
+        "digest": "cc21ae26134a96137b1fcb89587d47e93917073f5ac32c83894ccb2a7603728d"
+      }
+    },
+    "actionVersions": {
+      "launcher/etf-trend-monitor": {
+        "version": "0.0.1",
+        "digest": "427bd3619c1d348cdbf24beb1ec767a809f097abe3ee744c504ca2f79ce13228"
+      }
+    }
+  }
+]
