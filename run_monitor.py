@@ -456,13 +456,15 @@ def main():
             df_filtered, cols=cols, top_n=10
         )
 
-        TO_ADDRESSES = os.getenv("TO_ADDRESSES", "").split(",")
-        FROM_ADDRESS = os.getenv("FROM_ADDRESS", "")
+        TO_ADDRESSES = [x.strip() for x in os.getenv("TO_ADDRESSES", "").split(",") if x.strip()]
+        FROM_ADDRESS = os.getenv("FROM_ADDRESS", "").strip()
+        if not TO_ADDRESSES:
+            raise ValueError("Missing required environment variable: TO_ADDRESSES")
         ses = AmazonSES(
             region=os.environ.get("AWS_SES_REGION_NAME"),
             access_key=os.environ.get("AWS_SES_ACCESS_KEY_ID"),
             secret_key=os.environ.get("AWS_SES_SECRET_ACCESS_KEY"),
-            from_address=os.environ.get("FROM_ADDRESS"),
+            from_address=FROM_ADDRESS,
         )
 
         today_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
