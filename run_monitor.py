@@ -34,6 +34,18 @@ def getenv_float(name: str, default: float) -> float:
 
     return float(value)
 
+
+def getenv_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+
+    value = value.strip().lower()
+    if not value:
+        return default
+
+    return value in {"1", "true", "yes", "y", "on"}
+
 # -----------------------
 # Defaults
 # -----------------------
@@ -51,15 +63,39 @@ KEEP_PATTERNS = [
     "Growth",
     "REIT",
     "Thematic/Innovation",
-    "Leveraged/Inverse",
     "Dividend/Income",
     "Global/World",
     "Option Strategy",
-    "Short",
     "Loan",
 ]
 
 MA_WINS = [50, 100, 150, 200, 250, 300]
+ROBUST_OUTPUT_COLS = [
+    "Ticker",
+    "Fund Name",
+    "Category",
+    "Avg-Vol",
+    "Start Date",
+    "RobustScore",
+    "SharpeMedian",
+    "SharpeMin",
+    "SharpeRange",
+    "CAGRMedian",
+    "MaxDDWorst",
+    "ProfitableWindows",
+    "AvgTimeInMarket",
+    "BH_Sharpe",
+    "BH_CAGR",
+    "BH_MaxDD",
+    "SharpeEdge",
+    "DrawdownReduction",
+    "AboveMA",
+    "DistanceFromMA",
+    "MA_1M_Slope",
+    "MA_3M_Slope",
+    "Momentum_3M",
+    "Momentum_6M",
+]
 
 
 # -----------------------
@@ -81,7 +117,7 @@ def html_td(value: object, align: str = "right") -> str:
 
 
 def build_trend_monitor_tables(
-    df_filtered: pd.DataFrame, cols: list[str], top_n: int = 10
+    df_filtered: pd.DataFrame, cols: list[str], top_n: int = 10, sort_by: str = "Sharpe"
 ):
     """
     Grouped Trend Monitor tables by Category.
@@ -117,7 +153,32 @@ def build_trend_monitor_tables(
 
     # ---------- Formatting ----------
     metric_cols = [
-        c for c in ["Sharpe", "CAGR", "MaxDD", "TimeInMarket"] if c in df_disp.columns
+        c
+        for c in [
+            "Sharpe",
+            "CAGR",
+            "MaxDD",
+            "TimeInMarket",
+            "RobustScore",
+            "SharpeMedian",
+            "SharpeMin",
+            "SharpeRange",
+            "CAGRMedian",
+            "MaxDDWorst",
+            "ProfitableWindows",
+            "AvgTimeInMarket",
+            "BH_Sharpe",
+            "BH_CAGR",
+            "BH_MaxDD",
+            "SharpeEdge",
+            "DrawdownReduction",
+            "DistanceFromMA",
+            "MA_1M_Slope",
+            "MA_3M_Slope",
+            "Momentum_3M",
+            "Momentum_6M",
+        ]
+        if c in df_disp.columns
     ]
     for c in metric_cols:
         df_disp[c] = pd.to_numeric(df_disp[c], errors="coerce").round(3)
@@ -137,7 +198,9 @@ def build_trend_monitor_tables(
     # ---------- Plain text ----------
     plain_blocks = []
     for category, g in df_disp.groupby("Category", dropna=False):
-        g = g.sort_values("Sharpe", ascending=False).head(top_n).copy()
+        if sort_by in g.columns:
+            g = g.sort_values(sort_by, ascending=False)
+        g = g.head(top_n).copy()
 
         if "Avg-Vol" in g.columns:
             g["Avg-Vol"] = g["Avg-Vol"].map(
@@ -154,7 +217,9 @@ def build_trend_monitor_tables(
     html_blocks = []
 
     for category, g in df_disp.groupby("Category", dropna=False):
-        g = g.sort_values("Sharpe", ascending=False).head(top_n).copy()
+        if sort_by in g.columns:
+            g = g.sort_values(sort_by, ascending=False)
+        g = g.head(top_n).copy()
 
         if "Avg-Vol" in g.columns:
             g["Avg-Vol"] = g["Avg-Vol"].map(
@@ -207,6 +272,26 @@ def build_trend_monitor_tables(
     return html_out, plain_out
 
 
+def _annualized_return_stats(ret: pd.Series) -> dict:
+    ret = pd.to_numeric(ret, errors="coerce").dropna()
+    if ret.empty:
+        return {"CAGR": np.nan, "Sharpe": np.nan, "Vol": np.nan, "MaxDD": np.nan}
+
+    cum = (1 + ret).cumprod()
+    yrs = (cum.index[-1] - cum.index[0]).days / 365.25
+    if yrs <= 0:
+        return {"CAGR": np.nan, "Sharpe": np.nan, "Vol": np.nan, "MaxDD": np.nan}
+
+    vol = ret.std() * np.sqrt(252)
+    sharpe = (ret.mean() * 252) / vol if pd.notna(vol) and vol > 0 else np.nan
+    return {
+        "CAGR": cum.iloc[-1] ** (1 / yrs) - 1,
+        "Sharpe": sharpe,
+        "Vol": vol,
+        "MaxDD": (cum / cum.cummax() - 1).min(),
+    }
+
+
 def ma_strategy_metrics(price: pd.Series, ma_wins: Iterable[int]) -> pd.DataFrame:
     price = price.dropna()
     if price.empty:
@@ -223,26 +308,142 @@ def ma_strategy_metrics(price: pd.Series, ma_wins: Iterable[int]) -> pd.DataFram
         if strat_ret.empty:
             continue
 
-        cum = (1 + strat_ret).cumprod()
-        yrs = (cum.index[-1] - cum.index[0]).days / 365.25
-        if yrs <= 0:
+        perf = _annualized_return_stats(strat_ret)
+        if pd.isna(perf["CAGR"]):
             continue
-
-        vol = strat_ret.std() * np.sqrt(252)
-        sharpe = (strat_ret.mean() * 252) / vol if vol > 0 else np.nan
 
         rows.append(
             {
                 "MaWin": w,
-                "CAGR": cum.iloc[-1] ** (1 / yrs) - 1,
-                "Sharpe": sharpe,
-                "Vol": vol,
-                "MaxDD": (cum / cum.cummax() - 1).min(),
+                "CAGR": perf["CAGR"],
+                "Sharpe": perf["Sharpe"],
+                "Vol": perf["Vol"],
+                "MaxDD": perf["MaxDD"],
                 "TimeInMarket": float(signal.mean()),
             }
         )
 
     return pd.DataFrame(rows)
+
+
+def buy_hold_metrics(price: pd.Series) -> dict:
+    price = pd.to_numeric(price, errors="coerce").dropna()
+    if len(price) < 2:
+        return {
+            "BH_CAGR": np.nan,
+            "BH_Sharpe": np.nan,
+            "BH_MaxDD": np.nan,
+            "BH_Vol": np.nan,
+        }
+
+    perf = _annualized_return_stats(price.pct_change().dropna())
+    return {
+        "BH_CAGR": perf["CAGR"],
+        "BH_Sharpe": perf["Sharpe"],
+        "BH_MaxDD": perf["MaxDD"],
+        "BH_Vol": perf["Vol"],
+    }
+
+
+def current_trend_features(price: pd.Series, ma_window: int = 200) -> dict:
+    price = pd.to_numeric(price, errors="coerce").dropna()
+    out = {
+        "AboveMA": np.nan,
+        "DistanceFromMA": np.nan,
+        "MA_1M_Slope": np.nan,
+        "MA_3M_Slope": np.nan,
+        "Momentum_3M": np.nan,
+        "Momentum_6M": np.nan,
+    }
+    if price.empty or ma_window <= 0:
+        return out
+
+    ma = price.rolling(ma_window).mean().dropna()
+    if ma.empty:
+        return out
+
+    latest_price = price.iloc[-1]
+    latest_ma = ma.iloc[-1]
+    if pd.notna(latest_price) and pd.notna(latest_ma) and latest_ma != 0:
+        out["AboveMA"] = bool(latest_price > latest_ma)
+        out["DistanceFromMA"] = latest_price / latest_ma - 1
+
+    if len(ma) > 21:
+        prev_1m = ma.iloc[-22]
+        if pd.notna(prev_1m) and prev_1m != 0:
+            out["MA_1M_Slope"] = latest_ma / prev_1m - 1
+
+    if len(ma) > 63:
+        prev_3m = ma.iloc[-64]
+        if pd.notna(prev_3m) and prev_3m != 0:
+            out["MA_3M_Slope"] = latest_ma / prev_3m - 1
+
+    if len(price) > 63:
+        px_3m = price.iloc[-64]
+        if pd.notna(px_3m) and px_3m != 0:
+            out["Momentum_3M"] = latest_price / px_3m - 1
+
+    if len(price) > 126:
+        px_6m = price.iloc[-127]
+        if pd.notna(px_6m) and px_6m != 0:
+            out["Momentum_6M"] = latest_price / px_6m - 1
+
+    return out
+
+
+def robust_trend_score(stats: pd.DataFrame) -> pd.Series:
+    if stats is None or stats.empty:
+        return pd.Series(
+            {
+                "SharpeMedian": np.nan,
+                "SharpeMin": np.nan,
+                "SharpeMax": np.nan,
+                "SharpeRange": np.nan,
+                "CAGRMedian": np.nan,
+                "MaxDDWorst": np.nan,
+                "ProfitableWindows": np.nan,
+                "AvgTimeInMarket": np.nan,
+                "RobustScore": np.nan,
+            }
+        )
+
+    sharpe = pd.to_numeric(stats["Sharpe"], errors="coerce")
+    cagr = pd.to_numeric(stats["CAGR"], errors="coerce")
+    maxdd = pd.to_numeric(stats["MaxDD"], errors="coerce")
+    time_in = pd.to_numeric(stats["TimeInMarket"], errors="coerce")
+
+    sharpe_median = sharpe.median()
+    sharpe_min = sharpe.min()
+    sharpe_max = sharpe.max()
+    sharpe_range = sharpe_max - sharpe_min if pd.notna(sharpe_max) and pd.notna(sharpe_min) else np.nan
+    cagr_median = cagr.median()
+    maxdd_worst = maxdd.min()
+    profitable_windows = (cagr > 0).mean() if cagr.notna().any() else np.nan
+    avg_time_in = time_in.mean()
+    robust_score = np.nan
+    inputs = [sharpe_median, sharpe_min, cagr_median, profitable_windows, maxdd_worst]
+    if all(pd.notna(x) for x in inputs):
+        robust_score = (
+            0.35 * sharpe_median
+            + 0.20 * sharpe_min
+            + 0.20 * cagr_median
+            + 0.15 * profitable_windows
+            + 0.10 * maxdd_worst
+        )
+
+    return pd.Series(
+        {
+            "SharpeMedian": sharpe_median,
+            "SharpeMin": sharpe_min,
+            "SharpeMax": sharpe_max,
+            "SharpeRange": sharpe_range,
+            "CAGRMedian": cagr_median,
+            "MaxDDWorst": maxdd_worst,
+            "ProfitableWindows": profitable_windows,
+            "AvgTimeInMarket": avg_time_in,
+            "RobustScore": robust_score,
+        }
+    )
 
 
 # -----------------------
@@ -335,19 +536,26 @@ def load_px_from_cache(tickers: list[str], cache_dir: str) -> pd.DataFrame:
 # Universe filter
 # -----------------------
 def filter_universe(df: pd.DataFrame) -> pd.DataFrame:
+    include_leveraged = getenv_bool("INCLUDE_LEVERAGED", False)
+    df = df.copy()
+    df["Ticker"] = df["Ticker"].astype(str).str.upper().str.strip()
+    df["Category"] = df["Category"].astype(str)
+
     mask = (
         df["Category"]
         .astype(str)
         .str.contains("|".join(KEEP_PATTERNS), case=False, na=False)
     )
+    if not include_leveraged:
+        mask &= ~df["Category"].str.contains(
+            "Leveraged|Inverse|Short", case=False, na=False
+        )
 
     df = df[df["Avg-Vol"] >= MIN_AVG_VOL].copy()
     df["Start Date"] = pd.to_datetime(df["Start Date"], errors="coerce")
 
     univ_start = pd.Timestamp(UNIVERSE_START)
     df = df[df["Start Date"].notna() & (df["Start Date"] <= univ_start) & mask]
-
-    df["Ticker"] = df["Ticker"].str.upper().str.strip()
     return df.drop_duplicates("Ticker")
 
 
@@ -360,6 +568,7 @@ def main():
     ap.add_argument("--cache_dir", default="./cache_prices")
     ap.add_argument("--end", default=None)
     ap.add_argument("--out_filtered", default=None)
+    ap.add_argument("--mode", choices=["detailed", "robust"], default="robust")
     ap.add_argument(
         "--email",
         action="store_true",
@@ -370,7 +579,10 @@ def main():
     end = args.end or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     df_univ = pd.read_csv(args.universe_csv)
+    total_loaded = len(df_univ)
+    df_univ["Ticker"] = df_univ["Ticker"].astype(str).str.upper().str.strip()
     df_univ_filt = filter_universe(df_univ)
+    filtered_universe_count = len(df_univ_filt)
 
     tickers = df_univ_filt["Ticker"].tolist()
     print(f"Tickers after filters: {len(tickers)}")
@@ -386,6 +598,7 @@ def main():
     if px.empty:
         print("No price data loaded.")
         return
+    valid_price_count = int(px.notna().any().sum())
 
     dfs = []
     for t in px.columns:
@@ -393,68 +606,162 @@ def main():
         if not stats.empty:
             dfs.append(stats.assign(Ticker=t))
 
+    if not dfs:
+        print("No valid strategy metrics computed.")
+        return
+
     df_results = pd.concat(dfs, ignore_index=True)
-    df_results = df_results.merge(df_univ, on="Ticker", how="left")
-
-    df_filtered = df_results[
-        (df_results["Sharpe"] >= getenv_float("MIN_SHARPE", 0.6))
-        & (df_results["Sharpe"] <= getenv_float("MAX_SHARPE", 2.0))
-        & (df_results["MaxDD"] >= getenv_float("MAX_DD", -0.25))
-    ].copy()
-
-    # Normalize ticker for safe merging
-    df_univ["Ticker"] = df_univ["Ticker"].astype(str).str.upper().str.strip()
-    df_filtered["Ticker"] = df_filtered["Ticker"].astype(str).str.upper().str.strip()
-
-    # Merge universe metadata onto filtered results
     meta_cols = ["Ticker", "Fund Name", "Start Date", "Category", "Avg-Vol"]
+    df_results = df_results.merge(df_univ_filt[meta_cols], on="Ticker", how="left")
 
-    df_filtered = df_filtered.merge(
-        df_univ,
-        on="Ticker",
-        how="left",
-        suffixes=("", "_univ"),
-    )
-
-    # Drop the unwanted duplicates
-    df_filtered = df_filtered.drop(
-        columns=[c for c in df_filtered.columns if c.endswith("_univ")]
-    )
-
-    cols = [
+    cols_detailed = [
         "Ticker",
         "Fund Name",
         "Category",
         "Avg-Vol",
         "Start Date",
+        "RobustScore",
         "MaWin",
         "Sharpe",
         "CAGR",
         "MaxDD",
         "TimeInMarket",
     ]
-    out = (
-        df_filtered[cols]
-        .assign(
-            Sharpe=lambda x: x["Sharpe"].round(3),
-            CAGR=lambda x: x["CAGR"].round(3),
-            MaxDD=lambda x: x["MaxDD"].round(3),
-            TimeInMarket=lambda x: x["TimeInMarket"].round(3),
+    min_sharpe = getenv_float("MIN_SHARPE", 0.6)
+    max_sharpe = getenv_float("MAX_SHARPE", 2.0)
+    max_dd = getenv_float("MAX_DD", -0.25)
+    min_profitable_windows = getenv_float("MIN_PROFITABLE_WINDOWS", 0.70)
+
+    df_filtered = df_results[
+        (df_results["Sharpe"] >= min_sharpe)
+        & (df_results["Sharpe"] <= max_sharpe)
+        & (df_results["MaxDD"] >= max_dd)
+    ].copy()
+
+    robust_rows = []
+    for t in px.columns:
+        price = px[t].dropna()
+        if price.empty:
+            continue
+
+        robust = robust_trend_score(df_results[df_results["Ticker"] == t])
+        robust_rows.append(
+            {
+                "Ticker": t,
+                **robust.to_dict(),
+                **buy_hold_metrics(price),
+                **current_trend_features(price, ma_window=200),
+            }
         )
-        .sort_values("Sharpe", ascending=False)
-        .head(50)
+
+    df_ranked = pd.DataFrame(
+        robust_rows,
+        columns=[
+            "Ticker",
+            "SharpeMedian",
+            "SharpeMin",
+            "SharpeMax",
+            "SharpeRange",
+            "CAGRMedian",
+            "MaxDDWorst",
+            "ProfitableWindows",
+            "AvgTimeInMarket",
+            "RobustScore",
+            "BH_CAGR",
+            "BH_Sharpe",
+            "BH_MaxDD",
+            "BH_Vol",
+            "AboveMA",
+            "DistanceFromMA",
+            "MA_1M_Slope",
+            "MA_3M_Slope",
+            "Momentum_3M",
+            "Momentum_6M",
+        ],
+    )
+    if not df_ranked.empty:
+        df_ranked = df_ranked.merge(df_univ_filt[meta_cols], on="Ticker", how="left")
+        df_ranked["SharpeEdge"] = df_ranked["SharpeMedian"] - df_ranked["BH_Sharpe"]
+        df_ranked["DrawdownImprovement"] = (
+            df_ranked["BH_MaxDD"] - df_ranked["MaxDDWorst"]
+        )
+        df_ranked["DrawdownReduction"] = (
+            df_ranked["BH_MaxDD"].abs() - df_ranked["MaxDDWorst"].abs()
+        )
+    else:
+        for col in meta_cols[1:] + ["SharpeEdge", "DrawdownImprovement", "DrawdownReduction"]:
+            df_ranked[col] = pd.Series(dtype=float if col != "Fund Name" and col != "Category" and col != "Start Date" else object)
+
+    df_filtered = df_filtered.merge(
+        df_ranked[["Ticker", "RobustScore"]],
+        on="Ticker",
+        how="left",
     )
 
-    print(out.to_string(index=False))
+    df_robust_filtered = df_ranked[
+        (df_ranked["SharpeMedian"] >= min_sharpe)
+        & (df_ranked["MaxDDWorst"] >= max_dd)
+        & (df_ranked["ProfitableWindows"] >= min_profitable_windows)
+        & (df_ranked["Avg-Vol"] >= MIN_AVG_VOL)
+        & (df_ranked["AboveMA"] == True)
+    ].copy()
+
+    df_robust_filtered = df_robust_filtered.sort_values(
+        ["RobustScore", "SharpeEdge", "DrawdownReduction"],
+        ascending=[False, False, False],
+    )
+
+    if args.mode == "detailed":
+        out_df = (
+            df_filtered[cols_detailed]
+            .assign(
+                RobustScore=lambda x: pd.to_numeric(x["RobustScore"], errors="coerce").round(3),
+                Sharpe=lambda x: x["Sharpe"].round(3),
+                CAGR=lambda x: x["CAGR"].round(3),
+                MaxDD=lambda x: x["MaxDD"].round(3),
+                TimeInMarket=lambda x: x["TimeInMarket"].round(3),
+            )
+            .sort_values(["RobustScore", "Sharpe"], ascending=[False, False])
+            .head(50)
+        )
+        output_df = df_filtered[cols_detailed]
+        email_df = df_filtered
+        email_cols = cols_detailed
+        email_sort = "RobustScore"
+        passing_count = len(df_filtered)
+    else:
+        robust_cols = [c for c in ROBUST_OUTPUT_COLS if c in df_robust_filtered.columns]
+        out_df = df_robust_filtered[robust_cols].copy().head(20)
+        round_cols = [c for c in robust_cols if c not in {"Ticker", "Fund Name", "Category", "Start Date", "AboveMA"}]
+        for c in round_cols:
+            out_df[c] = pd.to_numeric(out_df[c], errors="coerce").round(3)
+        output_df = df_robust_filtered[robust_cols]
+        email_df = df_robust_filtered
+        email_cols = robust_cols
+        email_sort = "RobustScore"
+        passing_count = len(df_robust_filtered)
+
+    print(f"Total ETFs loaded: {total_loaded}")
+    print(f"ETFs after universe filter: {filtered_universe_count}")
+    print(f"ETFs with valid price data: {valid_price_count}")
+    if args.mode == "robust":
+        print(f"ETFs passing robust filters: {passing_count}")
+    else:
+        print(f"ETFs passing detailed filters: {passing_count}")
+    print("Top 20 ranked ETFs:")
+    print(out_df.to_string(index=False))
 
     if args.out_filtered:
-        df_filtered[cols].to_csv(args.out_filtered, index=False)
+        output_df.to_csv(args.out_filtered, index=False)
 
     if args.email:
-
         message_body_html, message_body_plain = build_trend_monitor_tables(
-            df_filtered, cols=cols, top_n=10
+            email_df, cols=email_cols, top_n=10, sort_by=email_sort
         )
+        attachment_df = output_df.copy()
+        if email_sort in attachment_df.columns:
+            attachment_df = attachment_df.sort_values(email_sort, ascending=False)
+        attachment_csv = attachment_df.to_csv(index=False).encode("utf-8")
 
         TO_ADDRESSES = [x.strip() for x in os.getenv("TO_ADDRESSES", "").split(",") if x.strip()]
         FROM_ADDRESS = os.getenv("FROM_ADDRESS", "").strip()
@@ -468,11 +775,18 @@ def main():
         )
 
         today_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
+        date_stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         subject = f"ETF Trend Monitor – Week of {today_str}"
+        attachment_name = f"etf-trend-monitor-{args.mode}-{date_stamp}.csv"
 
         for to_address in TO_ADDRESSES:
-            ses.send_html_email(
-                to_address=to_address, subject=subject, content=message_body_html
+            ses.send_html_email_with_attachment(
+                to_address=to_address,
+                subject=subject,
+                html_content=message_body_html,
+                text_content=message_body_plain,
+                attachment_name=attachment_name,
+                attachment_bytes=attachment_csv,
             )
 
 
