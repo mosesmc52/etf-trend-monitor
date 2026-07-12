@@ -19,6 +19,7 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction --no-root
 
 # app + cron + supervisor
+COPY regime_detector.py .
 COPY run_monitor.py .
 COPY SES.py .
 COPY etf-list.csv .
