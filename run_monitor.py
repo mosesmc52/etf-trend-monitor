@@ -19,8 +19,16 @@ import pandas as pd
 import yfinance as yf
 from dotenv import find_dotenv, load_dotenv
 from SES import AmazonSES
+from regime_detector import RegimeDetector
 
 load_dotenv(find_dotenv())
+
+REGIME_ORDER = [
+    "Stable Risk-On",
+    "Fragile",
+    "Vol Shock",
+    "Crisis",
+]
 
 
 def getenv_float(name: str, default: float) -> float:
@@ -207,6 +215,326 @@ def build_trend_monitor_tables(
     return html_out, plain_out
 
 
+def _annualized_metrics(strat_ret: pd.Series, signal: pd.Series) -> dict[str, float]:
+    strat_ret = strat_ret.dropna()
+    signal = signal.reindex(strat_ret.index).dropna()
+
+    if strat_ret.empty:
+        return {
+            "CAGR": np.nan,
+            "Sharpe": np.nan,
+            "Vol": np.nan,
+            "MaxDD": np.nan,
+            "TimeInMarket": np.nan,
+            "Obs": 0,
+        }
+
+    cum = (1 + strat_ret).cumprod()
+    yrs = (cum.index[-1] - cum.index[0]).days / 365.25
+    vol = strat_ret.std() * np.sqrt(252)
+    sharpe = (strat_ret.mean() * 252) / vol if vol > 0 else np.nan
+    cagr = cum.iloc[-1] ** (1 / yrs) - 1 if yrs > 0 else np.nan
+
+    return {
+        "CAGR": cagr,
+        "Sharpe": sharpe,
+        "Vol": vol,
+        "MaxDD": (cum / cum.cummax() - 1).min(),
+        "TimeInMarket": float(signal.mean()) if not signal.empty else np.nan,
+        "Obs": int(len(strat_ret)),
+    }
+
+
+def regime_strategy_metrics(
+    price: pd.Series, ma_wins: Iterable[int], regimes: pd.Series
+) -> pd.DataFrame:
+    price = price.dropna()
+    regimes = regimes.dropna()
+    if price.empty or regimes.empty:
+        return pd.DataFrame()
+
+    ret = price.pct_change()
+    rows = []
+
+    for w in ma_wins:
+        ma = price.rolling(w).mean()
+        signal = (price > ma).shift(1)
+        strat_ret = (ret * signal).dropna()
+        aligned = pd.DataFrame(
+            {
+                "StratRet": strat_ret,
+                "Signal": signal.reindex(strat_ret.index),
+                "RegimeLabel": regimes.reindex(strat_ret.index),
+            }
+        ).dropna(subset=["RegimeLabel"])
+
+        if aligned.empty:
+            continue
+
+        for regime_label, group in aligned.groupby("RegimeLabel"):
+            metrics = _annualized_metrics(group["StratRet"], group["Signal"])
+            if metrics["Obs"] == 0:
+                continue
+
+            rows.append(
+                {
+                    "MaWin": w,
+                    "RegimeLabel": regime_label,
+                    "RegimeDays": metrics["Obs"],
+                    "Sharpe": metrics["Sharpe"],
+                    "CAGR": metrics["CAGR"],
+                    "Vol": metrics["Vol"],
+                    "MaxDD": metrics["MaxDD"],
+                    "TimeInMarket": metrics["TimeInMarket"],
+                }
+            )
+
+    return pd.DataFrame(rows)
+
+
+def summarize_regime_category_etfs(
+    df_regime_filtered: pd.DataFrame,
+    top_categories: int = 5,
+    top_etfs_per_category: int = 5,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    if df_regime_filtered.empty:
+        return pd.DataFrame(), pd.DataFrame()
+
+    df_ranked = df_regime_filtered.copy()
+    df_ranked["Category"] = df_ranked["Category"].fillna("Uncategorized")
+    df_ranked["Fund Name"] = df_ranked["Fund Name"].fillna("")
+
+    category_summary = (
+        df_ranked.sort_values(
+            ["RegimeLabel", "Sharpe", "CAGR"], ascending=[True, False, False]
+        )
+        .groupby(["RegimeLabel", "Category"], dropna=False)
+        .agg(
+            ETFCount=("Ticker", "nunique"),
+            AvgSharpe=("Sharpe", "mean"),
+            AvgCAGR=("CAGR", "mean"),
+            AvgMaxDD=("MaxDD", "mean"),
+            AvgTimeInMarket=("TimeInMarket", "mean"),
+        )
+        .reset_index()
+    )
+
+    category_summary["CategoryRank"] = category_summary.groupby("RegimeLabel")[
+        "AvgSharpe"
+    ].rank(method="first", ascending=False)
+    category_summary = category_summary[
+        category_summary["CategoryRank"] <= top_categories
+    ].copy()
+
+    for col in ["AvgSharpe", "AvgCAGR", "AvgMaxDD", "AvgTimeInMarket"]:
+        category_summary[col] = pd.to_numeric(
+            category_summary[col], errors="coerce"
+        ).round(3)
+
+    category_summary["ETFCount"] = pd.to_numeric(
+        category_summary["ETFCount"], errors="coerce"
+    ).astype("Int64")
+    category_summary["CategoryRank"] = pd.to_numeric(
+        category_summary["CategoryRank"], errors="coerce"
+    ).astype("Int64")
+
+    regime_category_keys = category_summary[["RegimeLabel", "Category"]].drop_duplicates()
+    etf_rankings = df_ranked.merge(
+        regime_category_keys,
+        on=["RegimeLabel", "Category"],
+        how="inner",
+    )
+    etf_rankings = etf_rankings.sort_values(
+        ["RegimeLabel", "Category", "Sharpe", "CAGR"],
+        ascending=[True, True, False, False],
+    )
+    etf_rankings["ETFCategoryRank"] = etf_rankings.groupby(
+        ["RegimeLabel", "Category"]
+    ).cumcount() + 1
+    etf_rankings = etf_rankings[
+        etf_rankings["ETFCategoryRank"] <= top_etfs_per_category
+    ].copy()
+    etf_rankings = etf_rankings.merge(
+        category_summary[["RegimeLabel", "Category", "CategoryRank"]],
+        on=["RegimeLabel", "Category"],
+        how="left",
+    )
+
+    for col in ["Sharpe", "CAGR", "MaxDD", "TimeInMarket"]:
+        etf_rankings[col] = pd.to_numeric(etf_rankings[col], errors="coerce").round(3)
+
+    etf_rankings["MaWin"] = pd.to_numeric(etf_rankings["MaWin"], errors="coerce").astype(
+        "Int64"
+    )
+    etf_rankings["RegimeDays"] = pd.to_numeric(
+        etf_rankings["RegimeDays"], errors="coerce"
+    ).astype("Int64")
+    etf_rankings["CategoryRank"] = pd.to_numeric(
+        etf_rankings["CategoryRank"], errors="coerce"
+    ).astype("Int64")
+    etf_rankings["ETFCategoryRank"] = pd.to_numeric(
+        etf_rankings["ETFCategoryRank"], errors="coerce"
+    ).astype("Int64")
+
+    category_summary = category_summary.sort_values(
+        ["RegimeLabel", "CategoryRank", "AvgSharpe"], ascending=[True, True, False]
+    )
+    etf_rankings = etf_rankings.sort_values(
+        ["RegimeLabel", "CategoryRank", "ETFCategoryRank", "Sharpe"],
+        ascending=[True, True, True, False],
+    )
+
+    return category_summary, etf_rankings
+
+
+def build_regime_email_tables(
+    regime_summary: dict,
+    regime_category_summary: pd.DataFrame,
+    regime_etf_rankings: pd.DataFrame,
+) -> tuple[str, str]:
+    html_parts = [
+        "<br><b>Regime Monitor</b><br>",
+        (
+            "<p style='font-family:Arial, sans-serif; font-size:13px;'>"
+            f"<b>As of:</b> {regime_summary['as_of']}<br>"
+            f"<b>Dominant regime ({regime_summary['dominance_window']}d):</b> "
+            f"{regime_summary['dominant_label']}<br>"
+            f"<b>Latest regime:</b> {regime_summary['last_label']}"
+            "</p>"
+        ),
+    ]
+    plain_parts = [
+        "Regime Monitor",
+        (
+            f"As of: {regime_summary['as_of']}\n"
+            f"Dominant regime ({regime_summary['dominance_window']}d): "
+            f"{regime_summary['dominant_label']}\n"
+            f"Latest regime: {regime_summary['last_label']}\n"
+        ),
+    ]
+
+    summary_rows = []
+    for label in REGIME_ORDER:
+        days = int(regime_summary["counts"].get(label, 0))
+        summary_rows.append({"Regime": label, "DaysInWindow": days})
+
+    summary_df = pd.DataFrame(summary_rows)
+    summary_thead = "<tr>" + "".join(html_th(h) for h in summary_df.columns) + "</tr>"
+    summary_body = "".join(
+        "<tr>"
+        + html_td(row["Regime"], align="left")
+        + html_td(row["DaysInWindow"])
+        + "</tr>"
+        for _, row in summary_df.iterrows()
+    )
+    html_parts.append(
+        '<div style="width:100%; overflow-x:auto;">'
+        '<table style="width:100%; max-width:500px; border-collapse:collapse; '
+        'font-family:Arial, sans-serif; font-size:12px;">'
+        f"<thead>{summary_thead}</thead><tbody>{summary_body}</tbody></table></div><br>"
+    )
+    plain_parts.append(summary_df.to_string(index=False) + "\n")
+
+    if regime_category_summary.empty or regime_etf_rankings.empty:
+        html_parts.append("<p>No regime-specific category leaders matched the filters.</p>")
+        plain_parts.append("No regime-specific category leaders matched the filters.\n")
+        return "".join(html_parts), "\n".join(plain_parts)
+
+    for label in REGIME_ORDER:
+        category_section = regime_category_summary[
+            regime_category_summary["RegimeLabel"] == label
+        ].copy()
+        if category_section.empty:
+            html_parts.append(f"<p><b>{label}</b>: No category leaders matched filters.</p>")
+            plain_parts.append(f"{label}: No category leaders matched filters.\n")
+            continue
+
+        html_parts.append(
+            (
+                "<br>"
+                f"<div style='font-family:Arial, sans-serif; font-size:16px; "
+                f"font-weight:700; margin:10px 0 4px 0;'>{label}</div>"
+            )
+        )
+        plain_parts.append(f"\n{label}\n")
+
+        for _, category_row in category_section.iterrows():
+            category_name = category_row["Category"]
+            etf_section = regime_etf_rankings[
+                (regime_etf_rankings["RegimeLabel"] == label)
+                & (regime_etf_rankings["Category"] == category_name)
+            ].copy()
+
+            html_parts.append(
+                (
+                    "<p style='font-family:Arial, sans-serif; font-size:13px; margin:12px 0 6px 0;'>"
+                    f"<b>#{int(category_row['CategoryRank'])} {category_name}</b> "
+                    f"(ETFs: {int(category_row['ETFCount'])}, "
+                    f"Avg Sharpe: {category_row['AvgSharpe']}, "
+                    f"Avg CAGR: {category_row['AvgCAGR']}, "
+                    f"Avg MaxDD: {category_row['AvgMaxDD']}, "
+                    f"Avg Time In Market: {category_row['AvgTimeInMarket']})"
+                    "</p>"
+                )
+            )
+            plain_parts.append(
+                f"#{int(category_row['CategoryRank'])} {category_name} "
+                f"(ETFs: {int(category_row['ETFCount'])}, Avg Sharpe: {category_row['AvgSharpe']}, "
+                f"Avg CAGR: {category_row['AvgCAGR']}, Avg MaxDD: {category_row['AvgMaxDD']}, "
+                f"Avg Time In Market: {category_row['AvgTimeInMarket']})\n"
+            )
+
+            if etf_section.empty:
+                html_parts.append("<p>No ETFs matched filters in this category.</p>")
+                plain_parts.append("No ETFs matched filters in this category.\n")
+                continue
+
+            etf_display_cols = [
+                "ETFCategoryRank",
+                "Ticker",
+                "Fund Name",
+                "MaWin",
+                "Sharpe",
+                "CAGR",
+                "MaxDD",
+                "TimeInMarket",
+                "RegimeDays",
+            ]
+            etf_section["Ticker"] = etf_section["Ticker"].astype(str).map(
+                lambda t: (
+                    f'<a clicktracking="off" href="https://finviz.com/quote.ashx?t={t}">{t}</a>'
+                )
+            )
+            thead = "<tr>" + "".join(html_th(h) for h in etf_display_cols) + "</tr>"
+            body_rows = []
+            for _, etf_row in etf_section.iterrows():
+                body_rows.append(
+                    "<tr>"
+                    + "".join(
+                        html_td(
+                            etf_row[col],
+                            align="left" if col in {"Ticker", "Fund Name"} else "right",
+                        )
+                        for col in etf_display_cols
+                    )
+                    + "</tr>"
+                )
+            html_parts.append(
+                '<div style="width:100%; overflow-x:auto;">'
+                '<table style="width:100%; min-width:1100px; border-collapse:collapse; '
+                'font-family:Arial, sans-serif; font-size:12px;">'
+                f"<thead>{thead}</thead><tbody>{''.join(body_rows)}</tbody></table></div>"
+            )
+
+            plain_section = regime_etf_rankings[
+                (regime_etf_rankings["RegimeLabel"] == label)
+                & (regime_etf_rankings["Category"] == category_name)
+            ][etf_display_cols].copy()
+            plain_parts.append(plain_section.to_string(index=False) + "\n")
+
+    return "".join(html_parts) + "<br>", "\n".join(plain_parts)
+
+
 def ma_strategy_metrics(price: pd.Series, ma_wins: Iterable[int]) -> pd.DataFrame:
     price = price.dropna()
     if price.empty:
@@ -387,14 +715,52 @@ def main():
         print("No price data loaded.")
         return
 
+    detector = RegimeDetector(
+        vix_high_pct=getenv_float("REGIME_VIX_HIGH_PCT", 0.70),
+        spread_wide_pct=getenv_float("REGIME_SPREAD_WIDE_PCT", 0.70),
+        lookback=int(getenv_float("REGIME_LOOKBACK", 252)),
+        ema_span=int(getenv_float("REGIME_EMA_SPAN", 10)),
+        dominance_window=int(getenv_float("REGIME_DOMINANCE_WINDOW", 20)),
+        credit_mode=os.getenv("REGIME_CREDIT_MODE", "ratio").strip() or "ratio",
+    )
+    regime_frame = detector.build_regimes(start_date=UNIVERSE_START, end_date=end)
+    regime_labels = regime_frame["RegimeLabel"].dropna()
+    regime_summary = detector.dominant_regime(as_of=end, return_diagnostics=True)
+
     dfs = []
+    regime_dfs = []
     for t in px.columns:
         stats = ma_strategy_metrics(px[t], MA_WINS)
         if not stats.empty:
             dfs.append(stats.assign(Ticker=t))
+        regime_stats = regime_strategy_metrics(px[t], MA_WINS, regime_labels)
+        if not regime_stats.empty:
+            regime_dfs.append(regime_stats.assign(Ticker=t))
+
+    if not dfs:
+        print("No moving-average strategy results were generated.")
+        return
 
     df_results = pd.concat(dfs, ignore_index=True)
     df_results = df_results.merge(df_univ, on="Ticker", how="left")
+
+    if regime_dfs:
+        df_regime_results = pd.concat(regime_dfs, ignore_index=True)
+        df_regime_results = df_regime_results.merge(df_univ, on="Ticker", how="left")
+    else:
+        df_regime_results = pd.DataFrame(
+            columns=[
+                "Ticker",
+                "MaWin",
+                "RegimeLabel",
+                "RegimeDays",
+                "Sharpe",
+                "CAGR",
+                "Vol",
+                "MaxDD",
+                "TimeInMarket",
+            ]
+        )
 
     df_filtered = df_results[
         (df_results["Sharpe"] >= getenv_float("MIN_SHARPE", 0.6))
@@ -402,12 +768,18 @@ def main():
         & (df_results["MaxDD"] >= getenv_float("MAX_DD", -0.25))
     ].copy()
 
+    df_regime_filtered = df_regime_results[
+        (df_regime_results["Sharpe"] >= getenv_float("MIN_SHARPE", 0.6))
+        & (df_regime_results["Sharpe"] <= getenv_float("MAX_SHARPE", 2.0))
+        & (df_regime_results["MaxDD"] >= getenv_float("MAX_DD", -0.25))
+    ].copy()
+
     # Normalize ticker for safe merging
     df_univ["Ticker"] = df_univ["Ticker"].astype(str).str.upper().str.strip()
     df_filtered["Ticker"] = df_filtered["Ticker"].astype(str).str.upper().str.strip()
-
-    # Merge universe metadata onto filtered results
-    meta_cols = ["Ticker", "Fund Name", "Start Date", "Category", "Avg-Vol"]
+    df_regime_filtered["Ticker"] = (
+        df_regime_filtered["Ticker"].astype(str).str.upper().str.strip()
+    )
 
     df_filtered = df_filtered.merge(
         df_univ,
@@ -419,6 +791,20 @@ def main():
     # Drop the unwanted duplicates
     df_filtered = df_filtered.drop(
         columns=[c for c in df_filtered.columns if c.endswith("_univ")]
+    )
+    df_regime_filtered = df_regime_filtered.merge(
+        df_univ,
+        on="Ticker",
+        how="left",
+        suffixes=("", "_univ"),
+    )
+    df_regime_filtered = df_regime_filtered.drop(
+        columns=[c for c in df_regime_filtered.columns if c.endswith("_univ")]
+    )
+    regime_category_summary, regime_etf_rankings = summarize_regime_category_etfs(
+        df_regime_filtered,
+        top_categories=int(getenv_float("REGIME_TOP_CATEGORIES", 5)),
+        top_etfs_per_category=int(getenv_float("REGIME_TOP_ETFS_PER_CATEGORY", 5)),
     )
 
     cols = [
@@ -455,6 +841,13 @@ def main():
         message_body_html, message_body_plain = build_trend_monitor_tables(
             df_filtered, cols=cols, top_n=10
         )
+        regime_html, regime_plain = build_regime_email_tables(
+            regime_summary,
+            regime_category_summary,
+            regime_etf_rankings,
+        )
+        message_body_html = regime_html + message_body_html
+        message_body_plain = regime_plain + "\n" + message_body_plain
 
         TO_ADDRESSES = [x.strip() for x in os.getenv("TO_ADDRESSES", "").split(",") if x.strip()]
         FROM_ADDRESS = os.getenv("FROM_ADDRESS", "").strip()
